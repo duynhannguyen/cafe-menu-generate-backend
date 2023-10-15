@@ -8,7 +8,6 @@ import { ObjectId } from "mongodb";
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body || {};
   const exsittingUser = await db.users.findOne({ email });
-  console.log(exsittingUser);
   if (!exsittingUser) {
     res.status(400);
     throw new Error("Invaid credentials");
@@ -31,7 +30,7 @@ const login = asyncHandler(async (req, res) => {
   const token = jwt.sign(payload, SECRET_KEY, {
     expiresIn: process.env.JWT_EXPIRES_TIME,
   });
-  res.status(200).json({
+  res.json({
     message: "login successfully",
     accessToken: token,
   });

@@ -4,11 +4,7 @@ import { connectToDatabase } from "./config/database.js";
 import handleErrorMdw from "./middlewares/handleError.mdw.js";
 import cors from "cors";
 import appRouter from "./routes/index.js";
-const whiteList = [
-  "https://social-app-server-p5cm.onrender.com",
-  "https://social-app-client-a2fz.onrender.com",
-  "http://localhost:3001",
-];
+const whiteList = ["http://localhost:3001"];
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -34,5 +30,5 @@ app.use(cors(corsOptions));
 app.use("/api/v1", appRouter);
 app.use(handleErrorMdw);
 app.listen(PORT, () => {
-  console.log(`Server is running at ${PORT} `);
+  console.log(`Server is running at PORT ${PORT}`);
 });

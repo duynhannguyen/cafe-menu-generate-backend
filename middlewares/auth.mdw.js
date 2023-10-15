@@ -8,12 +8,11 @@ const authMdw = (req, res, next) => {
       });
     }
     const decoded = jwt.verify(accessToken, process.env.SECRET_KEY);
-    console.log(decoded);
     req.user = decoded;
     next();
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
-      return res.staus(401).json({
+      return res.status(401).json({
         message: "Token has expired",
       });
     } else {
