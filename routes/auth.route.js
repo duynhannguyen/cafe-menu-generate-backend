@@ -6,6 +6,12 @@ import AuthValidatior from "../validationSchema/auth.validatior.js";
 const router = express.Router();
 
 router.post(
+  "/signup",
+  validateMdw(AuthValidatior.signupSchema),
+  AuthController.signup
+);
+
+router.post(
   "/login",
   validateMdw(AuthValidatior.loginSchema),
   AuthController.login

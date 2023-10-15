@@ -33,6 +33,6 @@ app.use(express.json());
 app.use(cors(corsOptions));
 app.use("/api/v1", appRouter);
 app.use(handleErrorMdw);
-app.listen(() => {
+app.listen(PORT, () => {
   console.log(`Server is running at ${PORT} `);
 });
