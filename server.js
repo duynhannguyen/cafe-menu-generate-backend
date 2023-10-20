@@ -1,9 +1,10 @@
-import express, { json } from "express";
+import express from "express";
 import "dotenv/config";
 import { connectToDatabase } from "./config/database.js";
 import handleErrorMdw from "./middlewares/handleError.mdw.js";
 import cors from "cors";
 import appRouter from "./routes/index.js";
+
 const whiteList = ["http://localhost:3001"];
 
 const corsOptions = {
@@ -23,12 +24,14 @@ const corsOptions = {
 const app = express();
 const PORT = process.env.PORT;
 
-connectToDatabase();
-
 app.use(express.json());
 app.use(cors(corsOptions));
 app.use("/api/v1", appRouter);
 app.use(handleErrorMdw);
+
+
+connectToDatabase();
+
 app.listen(PORT, () => {
   console.log(`Server is running at PORT ${PORT}`);
 });
