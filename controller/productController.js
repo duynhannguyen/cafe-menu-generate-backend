@@ -33,8 +33,14 @@ const createDish = asyncHandler(async (req, res) => {
   });
 });
 
+const getDish = asyncHandler(async (req, res) => {
+  const { email } = req.user;
+  const getAllDish = await db.dishes.find({ email }).toArray();
+  res.status(200).json(getAllDish);
+});
 const menuController = {
   createDish,
+  getDish,
 };
 
 export default menuController;

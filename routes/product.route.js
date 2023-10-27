@@ -12,4 +12,6 @@ router.post(
   menuController.createDish
 );
 
+router.get("/menu", authMdw, menuController.getDish);
+
 export default router;
