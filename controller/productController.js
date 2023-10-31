@@ -7,7 +7,6 @@ const createDish = asyncHandler(async (req, res) => {
   const { maHangHoa, tenHang, nhomHang, loai, giaBan, giaVon } = dishValue;
   const { email } = req.user;
   const file = req.file;
-  console.log("path", file);
   const exitstingDish = await db.dishes.findOne({ tenHang });
 
   if (exitstingDish) {
@@ -26,9 +25,9 @@ const createDish = asyncHandler(async (req, res) => {
       giaBan,
       giaVon,
       hinhAnh: uploadFile.url,
+      idHinhAnh: uploadFile.id,
     };
     await db.dishes.insertOne(newDish);
-    console.log("img", newDish);
   } else {
     const newDish = {
       // _id: id,
@@ -42,7 +41,6 @@ const createDish = asyncHandler(async (req, res) => {
       hinhAnh: "",
     };
     await db.dishes.insertOne(newDish);
-    console.log("noimg", newDish);
   }
 
   res.status(200).json({
@@ -58,11 +56,14 @@ const getDish = asyncHandler(async (req, res) => {
 const deleteDish = asyncHandler(async (req, res) => {
   const id = req.params.id;
   const exitstingDish = await db.dishes.findOne({ _id: new ObjectId(id) });
+  const { idHinhAnh } = exitstingDish;
   if (!exitstingDish) {
     return res.status(400).json({
       message: "Không tìm thấy món ăn",
     });
   }
+  const deleteFIle = await cloudinaryService.deletingSingleFile(idHinhAnh);
+
   await db.dishes.deleteOne({ _id: new ObjectId(id) });
   res.status(200).json({
     message: "Xóa món ăn thành công ",
@@ -71,29 +72,64 @@ const deleteDish = asyncHandler(async (req, res) => {
 const updateDish = asyncHandler(async (req, res) => {
   const id = req.params.id;
   const file = req.file;
-  console.log("update file", file);
-  const { maHangHoa, tenHang, nhomHang, loai, giaBan, giaVon } = req.body;
-  const exitstingDish = await db.dishes.findOne({ _id: new ObjectId(id) });
-  if (!exitstingDish) {
-    res.status(400).json({
-      message: "Không tìm thấy món ăn",
+  if (file) {
+    const dishValue = JSON.parse(req.body.body);
+    const { maHangHoa, tenHang, nhomHang, loai, giaBan, giaVon } = dishValue;
+    const exitstingDish = await db.dishes.findOne({ _id: new ObjectId(id) });
+    if (!exitstingDish) {
+      res.status(400).json({
+        message: "Không tìm thấy món ăn",
+      });
+    }
+    const uploadFile = await cloudinaryService.upLoadingSingleFile(file.path);
+    console.log("cloud", uploadFile);
+    const hinhAnh = uploadFile.url;
+    const updatingDish = {
+      ...(maHangHoa && { maHangHoa }),
+      ...(tenHang && { tenHang }),
+      ...(nhomHang && { nhomHang }),
+      ...(loai && { loai }),
+      ...(giaBan && { giaBan }),
+      ...(giaVon && { giaVon }),
+      ...(file && { hinhAnh }),
+    };
+    await db.dishes.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: updatingDish }
+    );
+    res.status(200).json({
+      message: "Cập nhật món ăn thành công ",
+    });
+  } else {
+    const dishValue = JSON.parse(req.body.body);
+
+    const { maHangHoa, tenHang, nhomHang, loai, giaBan, giaVon, hinhAnh } =
+      dishValue;
+
+    const exitstingDish = await db.dishes.findOne({ _id: new ObjectId(id) });
+
+    if (!exitstingDish) {
+      res.status(400).json({
+        message: "Không tìm thấy món ăn",
+      });
+    }
+    const updatingDish = {
+      ...(maHangHoa && { maHangHoa }),
+      ...(tenHang && { tenHang }),
+      ...(nhomHang && { nhomHang }),
+      ...(loai && { loai }),
+      ...(giaBan && { giaBan }),
+      ...(giaVon && { giaVon }),
+      ...(file && { hinhAnh }),
+    };
+    await db.dishes.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: updatingDish }
+    );
+    res.status(200).json({
+      message: "Cập nhật món ăn thành công ",
     });
   }
-  const uploadFile = await cloudinaryService.upLoadingSingleFile(file.path);
-  const hinhAnh = uploadFile.url;
-  // console.log("image", image);
-  const updatingDish = {
-    ...(maHangHoa && { maHangHoa }),
-    ...(tenHang && { tenHang }),
-    ...(nhomHang && { nhomHang }),
-    ...(loai && { loai }),
-    ...(giaBan && { giaBan }),
-    ...(giaVon && { giaVon }),
-    ...(file && { hinhAnh }),
-  };
-  await db.dishes.updateOne({ _id: new ObjectId(id) }, { $set: updatingDish });
-  const updatedDish = await db.dishes.findOne({ _id: new ObjectId(id) });
-  res.status(200).json(updatedDish);
 });
 const menuController = {
   createDish,

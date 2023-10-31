@@ -1,4 +1,5 @@
 import { v2 as cloudinary } from "cloudinary";
+import { error } from "console";
 import fs from "fs";
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUDNAME,
@@ -29,9 +30,39 @@ const upLoadingSingleFile = (filePath, folder = "mayme-fullstack-app") => {
     );
   });
 };
+// const deletingSingleFile = (publicId, folder = "mayme-fullstack-app") => {
+//   return new Promise((resolve, reject) => {
+//     cloudinary.uploader.destroy(publicId, {
+//       resource_type: "auto",
+//       folder: folder,
+//     });
+//   });
+// };
+const deletingSingleFile = (publicId, folder = "mayme-fullstack-app") => {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader.destroy(
+      publicId,
+      {
+        type: "upload",
+        resource_type: "image",
+        folder: folder,
+      },
+      (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve({
+            result: result,
+          });
+        }
+      }
+    );
+  });
+};
 
 const cloudinaryService = {
   upLoadingSingleFile,
+  deletingSingleFile,
 };
 
 export default cloudinaryService;
