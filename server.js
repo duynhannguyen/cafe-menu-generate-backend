@@ -27,7 +27,7 @@ const app = express();
 const PORT = process.env.PORT;
 
 app.use(express.json());
-app.use(cors(corsOptions));
+app.use(cors("*"));
 app.use("/api/v1", appRouter);
 app.use(handleErrorMdw);
 
