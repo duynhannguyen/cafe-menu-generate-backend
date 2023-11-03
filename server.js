@@ -5,7 +5,7 @@ import handleErrorMdw from "./middlewares/handleError.mdw.js";
 import cors from "cors";
 import appRouter from "./routes/index.js";
 
-const whiteList = ["http://localhost:3001"];
+const whiteList = ["http://localhost:3001,https://mayme-backend.onrender.com"];
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -28,7 +28,6 @@ app.use(express.json());
 app.use(cors(corsOptions));
 app.use("/api/v1", appRouter);
 app.use(handleErrorMdw);
-
 
 connectToDatabase();
 
