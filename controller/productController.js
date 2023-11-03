@@ -56,13 +56,17 @@ const getDish = asyncHandler(async (req, res) => {
 const deleteDish = asyncHandler(async (req, res) => {
   const id = req.params.id;
   const exitstingDish = await db.dishes.findOne({ _id: new ObjectId(id) });
+  const { hinhAnh } = exitstingDish;
+  console.log(hinhAnh);
   const { idHinhAnh } = exitstingDish;
   if (!exitstingDish) {
     return res.status(400).json({
       message: "Không tìm thấy món ăn",
     });
   }
-  const deleteFIle = await cloudinaryService.deletingSingleFile(idHinhAnh);
+  if (hinhAnh) {
+    const deleteFIle = await cloudinaryService.deletingSingleFile(idHinhAnh);
+  }
 
   await db.dishes.deleteOne({ _id: new ObjectId(id) });
   res.status(200).json({
