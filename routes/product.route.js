@@ -12,7 +12,7 @@ router.post(
   menuController.createDish
 );
 
-router.get("/menu", authMdw, menuController.getDish);
+router.get("/menu/:id", menuController.getDish);
 router.delete("/menu/:id", authMdw, menuController.deleteDish);
 router.put(
   "/menu/:id",
@@ -20,5 +20,5 @@ router.put(
   uploadMdw.single("hinhAnh"),
   menuController.updateDish
 );
-
+router.get("/listmenu/:id", menuController.getUserById);
 export default router;

@@ -17,7 +17,6 @@ const createDish = asyncHandler(async (req, res) => {
     const uploadFile = await cloudinaryService.upLoadingSingleFile(file.path);
     const newDish = {
       // _id: id,
-      userId: _id,
       email,
       maHangHoa,
       tenHang,
@@ -50,7 +49,16 @@ const createDish = asyncHandler(async (req, res) => {
 });
 
 const getDish = asyncHandler(async (req, res) => {
-  const { email } = req.user;
+  const id = req.params.id;
+  const exitstingUser = await db.users.findOne(
+    { _id: new ObjectId(id) },
+    {
+      projection: {
+        password: 0,
+      },
+    }
+  );
+  const { email } = exitstingUser;
   const getAllDish = await db.dishes.find({ email }).toArray();
   res.status(200).json(getAllDish);
 });
@@ -136,11 +144,31 @@ const updateDish = asyncHandler(async (req, res) => {
     });
   }
 });
+
+const getUserById = asyncHandler(async (req, res) => {
+  const id = req.params.id;
+  const exitstingUser = await db.users.findOne(
+    { _id: new ObjectId(id) },
+    {
+      projection: {
+        password: 0,
+      },
+    }
+  );
+  if (!exitstingUser) {
+    return res.status(400).json({
+      message: "Không tìm thấy menu",
+    });
+  }
+  req.email = exitstingUser;
+  res.status(200).json(exitstingUser);
+});
 const menuController = {
   createDish,
   getDish,
   deleteDish,
   updateDish,
+  getUserById,
 };
 
 export default menuController;
