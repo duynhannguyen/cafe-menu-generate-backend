@@ -49,18 +49,24 @@ const createDish = asyncHandler(async (req, res) => {
 });
 
 const getDish = asyncHandler(async (req, res) => {
-  const id = req.params.id;
-  const exitstingUser = await db.users.findOne(
-    { _id: new ObjectId(id) },
-    {
-      projection: {
-        password: 0,
-      },
-    }
-  );
-  const { email } = exitstingUser;
-  const getAllDish = await db.dishes.find({ email }).toArray();
-  res.status(200).json(getAllDish);
+  const email = req.user;
+  if (email) {
+    const getAllDish = await db.dishes.find({ email }).toArray();
+    res.status(200).json(getAllDish);
+  } else {
+    const id = req.params.id;
+    const exitstingUser = await db.users.findOne(
+      { _id: new ObjectId(id) },
+      {
+        projection: {
+          password: 0,
+        },
+      }
+    );
+    const { email } = exitstingUser;
+    const getAllDish = await db.dishes.find({ email }).toArray();
+    res.status(200).json(getAllDish);
+  }
 });
 const deleteDish = asyncHandler(async (req, res) => {
   const id = req.params.id;
