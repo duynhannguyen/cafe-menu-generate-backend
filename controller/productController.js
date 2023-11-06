@@ -5,7 +5,7 @@ import { ObjectId } from "mongodb";
 const createDish = asyncHandler(async (req, res) => {
   const dishValue = JSON.parse(req.body.body);
   const { maHangHoa, tenHang, nhomHang, loai, giaBan, giaVon } = dishValue;
-  const { email } = req.user;
+  const { email, _id } = req.user;
   const file = req.file;
   const exitstingDish = await db.dishes.findOne({ tenHang });
 
@@ -17,6 +17,7 @@ const createDish = asyncHandler(async (req, res) => {
     const uploadFile = await cloudinaryService.upLoadingSingleFile(file.path);
     const newDish = {
       // _id: id,
+      userId: _id,
       email,
       maHangHoa,
       tenHang,
